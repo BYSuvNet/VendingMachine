@@ -3,7 +3,17 @@ namespace Core.Tests;
 
 public class VendingMachineTests
 {
-    readonly VendingMachine vendingMachine = new();
+    readonly VendingMachine vendingMachine = GetStockedVendingMachine();
+
+    private static VendingMachine GetStockedVendingMachine()
+    {
+        VendingMachine vendingMachine = new();
+        vendingMachine.AddProduct("cola", 1.00);
+        vendingMachine.AddProduct("chips", 0.50);
+        vendingMachine.AddProduct("candy", 0.65);
+        return vendingMachine;
+    }
+
     const string INSERTCOINMESSAGE = "INSERT COIN";
     const string PRICEMESSAGE = "PRICE";
     const string THANKYOUMESSAGE = "THANK YOU";
@@ -54,7 +64,7 @@ public class VendingMachineTests
     public void SelectProductWithNotEnoughMoneyWillDisplayPriceMessage()
     {
         // When
-        vendingMachine.SelectProduct(Product.Cola);
+        vendingMachine.SelectProduct("cola");
 
         // Then
         Assert.Equal(PRICEMESSAGE, vendingMachine.GetDisplay());
@@ -68,7 +78,7 @@ public class VendingMachineTests
         vendingMachine.InsertCoin("quarter");
 
         // When
-        vendingMachine.SelectProduct(Product.Chips);
+        vendingMachine.SelectProduct("chips");
 
         // Then
         Assert.Equal(THANKYOUMESSAGE, vendingMachine.GetDisplay());
@@ -80,12 +90,27 @@ public class VendingMachineTests
     {
         // Arrange
         vendingMachine.InsertCoin("quarter");
+        double expectedAmountback = 0.25;
 
         // Act
-        double amountReturned = vendingMachine.ReturnCoins();
+        double actualAmountReturned = vendingMachine.ReturnCoins();
 
         // Assert
-        Assert.Equal(0.25, amountReturned);
+        Assert.Equal(expectedAmountback, actualAmountReturned);
         Assert.Equal(INSERTCOINMESSAGE, vendingMachine.GetDisplay());
     }
+
+    // [Fact]
+    // public void SelectingOutOfStockProductWillDisplaySoldOut()
+    // {
+    //     // Given
+    //     vendingMachine.InsertCoin("quarter");
+    //     vendingMachine.InsertCoin("quarter");
+
+    //     // When
+    //     vendingMachine.SelectProduct(Product.Cola);
+
+    //     // Then
+    //     Assert.Equal("SOLD OUT", vendingMachine.GetDisplay());
+    // }
 }

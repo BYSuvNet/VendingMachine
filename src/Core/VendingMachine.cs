@@ -1,6 +1,7 @@
 ﻿
 
 using System.Globalization;
+using System.Runtime.InteropServices;
 
 namespace Core;
 
@@ -13,12 +14,7 @@ public class VendingMachine
 
     private SelectProductState selectProductState = SelectProductState.NotYetSelected;
 
-    private Dictionary<Product, double> products = new()
-    {
-        { Product.Cola, 1.0 },
-        { Product.Chips, 0.5 },
-        { Product.Candy, 0.65 }
-    };
+    private Dictionary<Product, int> products = new();
 
     private Dictionary<string, double> coins = new()
     {
@@ -26,6 +22,11 @@ public class VendingMachine
         { "dime", 0.10 },
         { "quarter", 0.25 }
     };
+
+    public void AddProduct(string product, double price)
+    {
+        products.Add(new Product(product, price), 0);
+    }
 
     public string GetDisplay()
     {
@@ -52,33 +53,33 @@ public class VendingMachine
 
     public void InsertCoin(string coin)
     {
-        if (!coins.ContainsKey(coin))
+        if (coins.TryGetValue(coin, out double coinValue))
         {
+            amount += coinValue;
+        }
+    }
+
+    public void SelectProduct(string productName)
+    {
+        var productEntry = products.FirstOrDefault(x => x.Key.Name == productName);
+        if (productEntry.Key == null)
+        {
+            throw new ArgumentException("Product not found! This should not happen. Please configure the machine correctly.");
+        }
+
+        Product product = productEntry.Key;
+        double price = productEntry.Key.Price;
+
+        if (amount < price)
+        {
+            selectProductState = SelectProductState.InsufficientAmount;
             return;
         }
 
-        amount += coins[coin];
-    }
+        amount -= price;
+        selectProductState = SelectProductState.Success;
 
-    public void SelectProduct(Product product)
-    {
-        if (products.TryGetValue(product, out double price))
-        {
-            if (amount < price)
-            {
-                selectProductState = SelectProductState.InsufficientAmount;
-                return;
-            }
-
-            selectProductState = SelectProductState.Success;
-            amount -= price;
-
-            //Call some hardware method to dispense the product here
-        }
-        else
-        {
-            throw new ArgumentException("Product not found!");
-        }
+        //Call some hardware method to dispense the product here
     }
 
     public double ReturnCoins()
@@ -89,12 +90,7 @@ public class VendingMachine
     }
 }
 
-public enum Product
-{
-    Cola,
-    Chips,
-    Candy
-}
+public record Product(string Name, double Price);
 
 public enum SelectProductState
 {
