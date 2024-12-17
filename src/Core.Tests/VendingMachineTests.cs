@@ -32,6 +32,8 @@ public class VendingMachineTests
     const string INSERTCOINMESSAGE = "INSERT COIN";
     const string PRICEMESSAGE = "PRICE";
     const string THANKYOUMESSAGE = "THANK YOU";
+    const string SOLDOUTMESSAGE = "SOLD OUT";
+    const string EXACTCHANGEONLYMESSAGE = "EXACT CHANGE ONLY";
 
     [Fact]
     public void NewVendingMachineWillShowINSERTCOIN()
@@ -126,7 +128,20 @@ public class VendingMachineTests
         emptyVendingMachine.BuyProduct(COKE);
 
         // Then
-        Assert.Equal("SOLD OUT", emptyVendingMachine.GetDisplay());
+        Assert.Equal(SOLDOUTMESSAGE, emptyVendingMachine.GetDisplay());
         Assert.Equal("$0.50", emptyVendingMachine.GetDisplay());
+    }
+
+    [Fact]
+    public void VendingMachineWithoutCoinsWillDisplayExactChangeOnly()
+    {
+        // Given
+        VendingMachine vendingMachine = GetEmptyVendingMachine();
+
+        // When
+        string expectedDisplay = vendingMachine.GetDisplay();
+
+        // Then
+        Assert.Equal(EXACTCHANGEONLYMESSAGE, expectedDisplay);
     }
 }
