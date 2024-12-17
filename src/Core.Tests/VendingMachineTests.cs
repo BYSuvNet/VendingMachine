@@ -16,7 +16,7 @@ public class VendingMachineTests
         vendingMachine.AddProduct(COKE, 1.00);
         vendingMachine.AddProduct(CHIPS, 0.50);
         vendingMachine.AddProduct(CANDY, 0.65);
-        return new VendingMachine();
+        return vendingMachine;
     }
 
     private static VendingMachine GetStockedVendingMachine()
@@ -119,14 +119,14 @@ public class VendingMachineTests
     public void SelectingOutOfStockProductWillDisplaySoldOut()
     {
         // Given
-        vendingMachine.InsertCoin("quarter");
-        vendingMachine.InsertCoin("quarter");
+        emptyVendingMachine.InsertCoin("quarter");
+        emptyVendingMachine.InsertCoin("quarter");
 
         // When
-        vendingMachine.SelectProduct(COKE);
+        emptyVendingMachine.SelectProduct(COKE);
 
         // Then
-        Assert.Equal("SOLD OUT", vendingMachine.GetDisplay());
-        Assert.Equal("$0.50", vendingMachine.GetDisplay());
+        Assert.Equal("SOLD OUT", emptyVendingMachine.GetDisplay());
+        Assert.Equal("$0.50", emptyVendingMachine.GetDisplay());
     }
 }

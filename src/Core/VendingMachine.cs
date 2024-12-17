@@ -11,6 +11,7 @@ public class VendingMachine
     const string INSERTCOINMESSAGE = "INSERT COIN";
     const string THANKYOUMESSAGE = "THANK YOU";
     const string INSUFFICIENTFUNDSMESSAGE = "PRICE";
+    const string OUTOFSTOCKMESSAGE = "SOLD OUT";
 
     private SelectProductState selectProductState = SelectProductState.NotYetSelected;
 
@@ -28,15 +29,10 @@ public class VendingMachine
         products.Add(new Product(product, price), 0);
     }
 
-    public void SetProductStock(string product, int stock)
+    public void SetProductStock(string productName, int stock)
     {
-        var productEntry = products.FirstOrDefault(x => x.Key.Name == product);
-        if (productEntry.Key == null)
-        {
-            throw new ArgumentException("Product not found! This should not happen. Please configure the machine correctly.");
-        }
-
-        products[productEntry.Key] = stock;
+        Product product = GetProduct(productName);
+        products[product] = stock;
     }
 
     public string GetDisplay()
@@ -45,6 +41,9 @@ public class VendingMachine
 
         switch (selectProductState)
         {
+            case SelectProductState.ProductOutOfStock:
+                displayMessage = OUTOFSTOCKMESSAGE;
+                break;
             case SelectProductState.InsufficientAmount:
                 displayMessage = INSUFFICIENTFUNDSMESSAGE;
                 break;
@@ -72,22 +71,21 @@ public class VendingMachine
 
     public void SelectProduct(string productName)
     {
-        var productEntry = products.FirstOrDefault(x => x.Key.Name == productName);
-        if (productEntry.Key == null)
+        Product product = GetProduct(productName);
+
+        if (!ProductIsAvailable(product))
         {
-            throw new ArgumentException("Product not found! This should not happen. Please configure the machine correctly.");
+            selectProductState = SelectProductState.ProductOutOfStock;
+            return;
         }
 
-        Product product = productEntry.Key;
-        double price = productEntry.Key.Price;
-
-        if (amount < price)
+        if (amount < product.Price)
         {
             selectProductState = SelectProductState.InsufficientAmount;
             return;
         }
 
-        amount -= price;
+        amount -= product.Price;
         selectProductState = SelectProductState.Success;
 
         //Call some hardware method to dispense the product here
@@ -99,6 +97,23 @@ public class VendingMachine
         amount = 0;
         return amountToBeReturned;
     }
+
+    private Product GetProduct(string productName)
+    {
+        var productEntry = products.FirstOrDefault(x => x.Key.Name == productName);
+        if (productEntry.Key == null)
+        {
+            throw new ArgumentException("Product not found! This should not happen. Please configure the machine correctly.");
+        }
+
+        return productEntry.Key;
+    }
+
+    private bool ProductIsAvailable(Product product)
+    {
+        return products[product] > 0;
+    }
+
 }
 
 public record Product(string Name, double Price);
@@ -107,5 +122,6 @@ public enum SelectProductState
 {
     NotYetSelected,
     InsufficientAmount,
+    ProductOutOfStock,
     Success
 }
