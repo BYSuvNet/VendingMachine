@@ -4,13 +4,16 @@ namespace Core.Tests;
 public class VendingMachineTests
 {
     readonly VendingMachine vendingMachine = GetStockedVendingMachine();
+    const string COKE = "cola";
+    const string CHIPS = "chips";
+    const string CANDY = "candy";
 
     private static VendingMachine GetStockedVendingMachine()
     {
         VendingMachine vendingMachine = new();
-        vendingMachine.AddProduct("cola", 1.00);
-        vendingMachine.AddProduct("chips", 0.50);
-        vendingMachine.AddProduct("candy", 0.65);
+        vendingMachine.AddProduct(COKE, 1.00);
+        vendingMachine.AddProduct(CHIPS, 0.50);
+        vendingMachine.AddProduct(CANDY, 0.65);
         return vendingMachine;
     }
 
@@ -64,7 +67,7 @@ public class VendingMachineTests
     public void SelectProductWithNotEnoughMoneyWillDisplayPriceMessage()
     {
         // When
-        vendingMachine.SelectProduct("cola");
+        vendingMachine.SelectProduct(COKE);
 
         // Then
         Assert.Equal(PRICEMESSAGE, vendingMachine.GetDisplay());
@@ -78,7 +81,7 @@ public class VendingMachineTests
         vendingMachine.InsertCoin("quarter");
 
         // When
-        vendingMachine.SelectProduct("chips");
+        vendingMachine.SelectProduct(CHIPS);
 
         // Then
         Assert.Equal(THANKYOUMESSAGE, vendingMachine.GetDisplay());
@@ -100,17 +103,17 @@ public class VendingMachineTests
         Assert.Equal(INSERTCOINMESSAGE, vendingMachine.GetDisplay());
     }
 
-    // [Fact]
-    // public void SelectingOutOfStockProductWillDisplaySoldOut()
-    // {
-    //     // Given
-    //     vendingMachine.InsertCoin("quarter");
-    //     vendingMachine.InsertCoin("quarter");
+    [Fact(Skip = "Not implemented yet")]
+    public void SelectingOutOfStockProductWillDisplaySoldOut()
+    {
+        // Given
+        vendingMachine.InsertCoin("quarter");
+        vendingMachine.InsertCoin("quarter");
 
-    //     // When
-    //     vendingMachine.SelectProduct(Product.Cola);
+        // When
+        vendingMachine.SelectProduct(COKE);
 
-    //     // Then
-    //     Assert.Equal("SOLD OUT", vendingMachine.GetDisplay());
-    // }
+        // Then
+        Assert.Equal("SOLD OUT", vendingMachine.GetDisplay());
+    }
 }
