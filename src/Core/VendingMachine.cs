@@ -28,6 +28,17 @@ public class VendingMachine
         products.Add(new Product(product, price), 0);
     }
 
+    public void SetProductStock(string product, int stock)
+    {
+        var productEntry = products.FirstOrDefault(x => x.Key.Name == product);
+        if (productEntry.Key == null)
+        {
+            throw new ArgumentException("Product not found! This should not happen. Please configure the machine correctly.");
+        }
+
+        products[productEntry.Key] = stock;
+    }
+
     public string GetDisplay()
     {
         string displayMessage = string.Empty;

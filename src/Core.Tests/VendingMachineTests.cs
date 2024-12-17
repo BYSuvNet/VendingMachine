@@ -4,17 +4,28 @@ namespace Core.Tests;
 public class VendingMachineTests
 {
     readonly VendingMachine vendingMachine = GetStockedVendingMachine();
+    readonly VendingMachine emptyVendingMachine = GetEmptyVendingMachine();
 
     const string COKE = "cola";
     const string CHIPS = "chips";
     const string CANDY = "candy";
 
-    private static VendingMachine GetStockedVendingMachine()
+    private static VendingMachine GetEmptyVendingMachine()
     {
         VendingMachine vendingMachine = new();
         vendingMachine.AddProduct(COKE, 1.00);
         vendingMachine.AddProduct(CHIPS, 0.50);
         vendingMachine.AddProduct(CANDY, 0.65);
+        return new VendingMachine();
+    }
+
+    private static VendingMachine GetStockedVendingMachine()
+    {
+        VendingMachine vendingMachine = GetEmptyVendingMachine();
+        // Add stock here
+        vendingMachine.SetProductStock(COKE, 10);
+        vendingMachine.SetProductStock(CHIPS, 10);
+        vendingMachine.SetProductStock(CANDY, 10);
         return vendingMachine;
     }
 
