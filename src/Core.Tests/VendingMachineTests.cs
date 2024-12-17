@@ -74,4 +74,18 @@ public class VendingMachineTests
         Assert.Equal(THANKYOUMESSAGE, vendingMachine.GetDisplay());
         Assert.Equal(INSERTCOINMESSAGE, vendingMachine.GetDisplay());
     }
+
+    [Fact]
+    public void PressingReturnChangeWillReturnCorrectAmountAndUpdateDisplay()
+    {
+        // Arrange
+        vendingMachine.InsertCoin("quarter");
+
+        // Act
+        double amountReturned = vendingMachine.ReturnCoins();
+
+        // Assert
+        Assert.Equal(0.25, amountReturned);
+        Assert.Equal(INSERTCOINMESSAGE, vendingMachine.GetDisplay());
+    }
 }

@@ -80,6 +80,13 @@ public class VendingMachine
             throw new ArgumentException("Product not found!");
         }
     }
+
+    public double ReturnCoins()
+    {
+        double amountToBeReturned = amount;
+        amount = 0;
+        return amountToBeReturned;
+    }
 }
 
 public enum Product
