@@ -4,6 +4,7 @@ namespace Core.Tests;
 public class VendingMachineTests
 {
     readonly VendingMachine vendingMachine = GetStockedVendingMachine();
+
     const string COKE = "cola";
     const string CHIPS = "chips";
     const string CANDY = "candy";
@@ -103,7 +104,7 @@ public class VendingMachineTests
         Assert.Equal(INSERTCOINMESSAGE, vendingMachine.GetDisplay());
     }
 
-    [Fact(Skip = "Not implemented yet")]
+    [Fact]
     public void SelectingOutOfStockProductWillDisplaySoldOut()
     {
         // Given
@@ -115,5 +116,6 @@ public class VendingMachineTests
 
         // Then
         Assert.Equal("SOLD OUT", vendingMachine.GetDisplay());
+        Assert.Equal("$0.50", vendingMachine.GetDisplay());
     }
 }
