@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Runtime.InteropServices.Marshalling;
 
 namespace Core;
 
@@ -9,17 +10,25 @@ public class VendingMachine
     const string THANKYOUMESSAGE = "THANK YOU";
     const string INSUFFICIENTFUNDSMESSAGE = "PRICE";
     const string OUTOFSTOCKMESSAGE = "SOLD OUT";
+    const string EXACTCHANGEONLYMESSAGE = "EXACT CHANGE ONLY";
 
     private SelectProductState selectProductState = SelectProductState.NotYetBought;
 
     private Dictionary<Product, int> products = new();
+    private Dictionary<Coin, int> coins = new();
 
-    private Dictionary<string, double> coins = new()
+    public VendingMachine()
     {
-        { "nickel", 0.05 },
-        { "dime", 0.10 },
-        { "quarter", 0.25 }
-    };
+        coins.Add(new Coin("nickel", 0.05), 0);
+        coins.Add(new Coin("dime", 0.10), 0);
+        coins.Add(new Coin("quarter", 0.25), 0);
+    }
+
+    public void SetCoinStock(string coinName, int stock)
+    {
+        Coin coin = GetCoin(coinName);
+        coins[coin] = stock;
+    }
 
     public void AddProduct(string product, double price)
     {
@@ -34,7 +43,7 @@ public class VendingMachine
 
     public string GetDisplay()
     {
-        string displayMessage = string.Empty;
+        string displayMessage;
 
         switch (selectProductState)
         {
@@ -48,9 +57,15 @@ public class VendingMachine
                 displayMessage = THANKYOUMESSAGE;
                 break;
             case SelectProductState.NotYetBought:
-                displayMessage = amount == 0 ? INSERTCOINMESSAGE : $"${amount.ToString("0.00", CultureInfo.InvariantCulture)}";
-                break;
             default:
+                if (amount == 0)
+                {
+                    displayMessage = ExactChangeOnly() ? EXACTCHANGEONLYMESSAGE : INSERTCOINMESSAGE;
+                }
+                else
+                {
+                    displayMessage = $"${amount.ToString("0.00", CultureInfo.InvariantCulture)}";
+                }
                 break;
         }
 
@@ -58,12 +73,16 @@ public class VendingMachine
         return displayMessage;
     }
 
-    public void InsertCoin(string coin)
+    public void InsertCoin(string coinName)
     {
-        if (coins.TryGetValue(coin, out double coinValue))
+        var coinEntry = coins.FirstOrDefault(x => x.Key.Name == coinName);
+        if (coinEntry.Key == null)
         {
-            amount += coinValue;
+            //If the coin is not recognized, we should do nothing
+            return;
         }
+
+        amount += coinEntry.Key.Value;
     }
 
     public void BuyProduct(string productName)
@@ -106,14 +125,32 @@ public class VendingMachine
         return productEntry.Key;
     }
 
+    private Coin GetCoin(string coinName)
+    {
+        var coinEntry = coins.FirstOrDefault(x => x.Key.Name == coinName);
+        if (coinEntry.Key == null)
+        {
+            throw new ArgumentException("Coin not found! This should not happen. Please configure the machine correctly.");
+        }
+
+        return coinEntry.Key;
+    }
+
     private bool ProductIsAvailable(Product product)
     {
         return products[product] > 0;
     }
 
+    private bool ExactChangeOnly()
+    {
+        // This could be more complex, but for now, we will just check if there is at 
+        // least one coin of each type in the machine to pretend it can give change
+        return !coins.Values.All(x => x > 0);
+    }
 }
 
 public record Product(string Name, double Price);
+public record Coin(string Name, double Value);
 
 public enum SelectProductState
 {

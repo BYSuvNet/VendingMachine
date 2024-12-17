@@ -16,6 +16,10 @@ public class VendingMachineTests
         vendingMachine.AddProduct(COKE, 1.00);
         vendingMachine.AddProduct(CHIPS, 0.50);
         vendingMachine.AddProduct(CANDY, 0.65);
+        vendingMachine.SetCoinStock("quarter", 100);
+        vendingMachine.SetCoinStock("dime", 100);
+        vendingMachine.SetCoinStock("nickel", 100);
+
         return vendingMachine;
     }
 
@@ -136,7 +140,7 @@ public class VendingMachineTests
     public void VendingMachineWithoutCoinsWillDisplayExactChangeOnly()
     {
         // Given
-        VendingMachine vendingMachine = GetEmptyVendingMachine();
+        VendingMachine vendingMachine = new();
 
         // When
         string expectedDisplay = vendingMachine.GetDisplay();
