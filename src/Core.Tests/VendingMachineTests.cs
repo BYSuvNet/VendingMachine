@@ -3,7 +3,7 @@ namespace Core.Tests;
 
 public class VendingMachineTests
 {
-    readonly VendingMachine vendingMachine = GetStockedVendingMachine();
+    readonly VendingMachine fullVendingMachine = GetStockedVendingMachine();
     readonly VendingMachine emptyVendingMachine = GetEmptyVendingMachine();
 
     const string COKE = "cola";
@@ -36,7 +36,7 @@ public class VendingMachineTests
     [Fact]
     public void NewVendingMachineWillShowINSERTCOIN()
     {
-        Assert.Equal(INSERTCOINMESSAGE, vendingMachine.GetDisplay());
+        Assert.Equal(INSERTCOINMESSAGE, fullVendingMachine.GetDisplay());
     }
 
     [Theory]
@@ -46,73 +46,73 @@ public class VendingMachineTests
     public void InsertValidCointWillDisplayAmount(string coin, string expectedDisplay)
     {
         // When
-        vendingMachine.InsertCoin(coin);
+        fullVendingMachine.InsertCoin(coin);
 
         // Then
-        Assert.Equal(expectedDisplay, vendingMachine.GetDisplay());
+        Assert.Equal(expectedDisplay, fullVendingMachine.GetDisplay());
     }
 
     [Fact]
     public void InsertInvalidCoinWillNotChangeMessage()
     {
         // When
-        string startMessage = vendingMachine.GetDisplay();
-        vendingMachine.InsertCoin("klingondollar");
+        string startMessage = fullVendingMachine.GetDisplay();
+        fullVendingMachine.InsertCoin("klingondollar");
 
         // Then
-        Assert.Equal(startMessage, vendingMachine.GetDisplay());
+        Assert.Equal(startMessage, fullVendingMachine.GetDisplay());
     }
 
     [Fact]
     public void InsertMultipleCoinsWillDisplayTotalAmount()
     {
         // When
-        vendingMachine.InsertCoin("nickel");
-        vendingMachine.InsertCoin("dime");
-        vendingMachine.InsertCoin("quarter");
+        fullVendingMachine.InsertCoin("nickel");
+        fullVendingMachine.InsertCoin("dime");
+        fullVendingMachine.InsertCoin("quarter");
 
         // Then
-        Assert.Equal("$0.40", vendingMachine.GetDisplay());
+        Assert.Equal("$0.40", fullVendingMachine.GetDisplay());
     }
 
     [Fact]
     public void SelectProductWithNotEnoughMoneyWillDisplayPriceMessage()
     {
         // When
-        vendingMachine.SelectProduct(COKE);
+        fullVendingMachine.BuyProduct(COKE);
 
         // Then
-        Assert.Equal(PRICEMESSAGE, vendingMachine.GetDisplay());
+        Assert.Equal(PRICEMESSAGE, fullVendingMachine.GetDisplay());
     }
 
     [Fact]
     public void SelectProductWithEnoughMoneyWillDisplayThankYouAndThenReset()
     {
         // Given
-        vendingMachine.InsertCoin("quarter");
-        vendingMachine.InsertCoin("quarter");
+        fullVendingMachine.InsertCoin("quarter");
+        fullVendingMachine.InsertCoin("quarter");
 
         // When
-        vendingMachine.SelectProduct(CHIPS);
+        fullVendingMachine.BuyProduct(CHIPS);
 
         // Then
-        Assert.Equal(THANKYOUMESSAGE, vendingMachine.GetDisplay());
-        Assert.Equal(INSERTCOINMESSAGE, vendingMachine.GetDisplay());
+        Assert.Equal(THANKYOUMESSAGE, fullVendingMachine.GetDisplay());
+        Assert.Equal(INSERTCOINMESSAGE, fullVendingMachine.GetDisplay());
     }
 
     [Fact]
     public void PressingReturnChangeWillReturnCorrectAmountAndUpdateDisplay()
     {
         // Arrange
-        vendingMachine.InsertCoin("quarter");
+        fullVendingMachine.InsertCoin("quarter");
         double expectedAmountback = 0.25;
 
         // Act
-        double actualAmountReturned = vendingMachine.ReturnCoins();
+        double actualAmountReturned = fullVendingMachine.ReturnCoins();
 
         // Assert
         Assert.Equal(expectedAmountback, actualAmountReturned);
-        Assert.Equal(INSERTCOINMESSAGE, vendingMachine.GetDisplay());
+        Assert.Equal(INSERTCOINMESSAGE, fullVendingMachine.GetDisplay());
     }
 
     [Fact]
@@ -123,7 +123,7 @@ public class VendingMachineTests
         emptyVendingMachine.InsertCoin("quarter");
 
         // When
-        emptyVendingMachine.SelectProduct(COKE);
+        emptyVendingMachine.BuyProduct(COKE);
 
         // Then
         Assert.Equal("SOLD OUT", emptyVendingMachine.GetDisplay());

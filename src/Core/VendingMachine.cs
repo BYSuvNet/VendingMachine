@@ -1,7 +1,4 @@
-﻿
-
-using System.Globalization;
-using System.Runtime.InteropServices;
+﻿using System.Globalization;
 
 namespace Core;
 
@@ -13,7 +10,7 @@ public class VendingMachine
     const string INSUFFICIENTFUNDSMESSAGE = "PRICE";
     const string OUTOFSTOCKMESSAGE = "SOLD OUT";
 
-    private SelectProductState selectProductState = SelectProductState.NotYetSelected;
+    private SelectProductState selectProductState = SelectProductState.NotYetBought;
 
     private Dictionary<Product, int> products = new();
 
@@ -50,14 +47,14 @@ public class VendingMachine
             case SelectProductState.Success:
                 displayMessage = THANKYOUMESSAGE;
                 break;
-            case SelectProductState.NotYetSelected:
+            case SelectProductState.NotYetBought:
                 displayMessage = amount == 0 ? INSERTCOINMESSAGE : $"${amount.ToString("0.00", CultureInfo.InvariantCulture)}";
                 break;
             default:
                 break;
         }
 
-        selectProductState = SelectProductState.NotYetSelected;
+        selectProductState = SelectProductState.NotYetBought;
         return displayMessage;
     }
 
@@ -69,7 +66,7 @@ public class VendingMachine
         }
     }
 
-    public void SelectProduct(string productName)
+    public void BuyProduct(string productName)
     {
         Product product = GetProduct(productName);
 
@@ -120,7 +117,7 @@ public record Product(string Name, double Price);
 
 public enum SelectProductState
 {
-    NotYetSelected,
+    NotYetBought,
     InsufficientAmount,
     ProductOutOfStock,
     Success
