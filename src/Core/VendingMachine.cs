@@ -1,7 +1,4 @@
-﻿using System.Globalization;
-using System.Runtime.InteropServices.Marshalling;
-
-namespace Core;
+﻿namespace Core;
 
 public class VendingMachine
 {
@@ -64,7 +61,7 @@ public class VendingMachine
                 }
                 else
                 {
-                    displayMessage = $"${amount.ToString("0.00", CultureInfo.InvariantCulture)}";
+                    displayMessage = $"${amount}";
                 }
                 break;
         }

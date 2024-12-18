@@ -1,4 +1,3 @@
-using Core;
 namespace Core.Tests;
 
 public class VendingMachineTests
